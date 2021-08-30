@@ -1,3 +1,15 @@
+# Tacotron 2 with efficient batching
+
+This repo is built based on NVIDIA's PyTorch implementation of [Tacotron2](https://github.com/nvidia/tacotron2), which speeds up the TTS model training by 40+%, without sacrificing model performance. The algorithm is general to any seq2seq model training with variable length input, and can also be applied to other training tasks such as in ASR and speaker recognition.
+
+For the details of the batching algorithms, please refer to our publication: [Speed up training with variable length inputs by efficient batching strategies](https://www.isca-speech.org/archive/pdfs/interspeech_2021/ge21_interspeech.pdf) in Interspeech 2021.
+
+Currently, this branch is identical to the NVIDIA's PyTorch implantation. It serves as the starting point of implementing our proposed batching strategies. This work is a part of our on-going speech synthesis and voice cloning project, and we are actively working on making this part available on top of a "clean" version of Tacotron2. The actual implementation code of the efficient batching algorithm will be released by **Sep. 10th, 2021**, along with a detailed README for example usages.
+
+Please come back to check out later.
+
+====== The content below is copied over from the original NVIDIA PyTorch [Tacotron2](https://github.com/nvidia/tacotron2) ======
+
 # Tacotron 2 (without wavenet)
 
 PyTorch implementation of [Natural TTS Synthesis By Conditioning
