@@ -27,3 +27,22 @@ def to_gpu(x):
     if torch.cuda.is_available():
         x = x.cuda(non_blocking=True)
     return torch.autograd.Variable(x)
+
+
+def warp_list(l, warp_size):
+    L = len(l)
+    idx = min(L, warp_size)
+    l2 = [l[:idx]]
+    while idx < L:
+        l2.append(l[idx:min(idx + warp_size, L)])
+        idx += warp_size
+    return l2
+
+
+def split_list(l, n):
+    k, m = divmod(len(l), n)
+    return [l[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n)]
+
+
+def flatten_list(l):
+    return [item for sublist in l for item in sublist]

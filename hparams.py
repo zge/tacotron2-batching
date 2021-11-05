@@ -1,5 +1,6 @@
 import tensorflow as tf
 from text import symbols
+from text_utils import dict2row
 
 
 def create_hparams(hparams_string=None, verbose=False):
@@ -9,8 +10,19 @@ def create_hparams(hparams_string=None, verbose=False):
         ################################
         # Experiment Parameters        #
         ################################
-        epochs=500,
+        epochs=5000,
+        check_by="epoch", # 'epoch' or 'iter'
         iters_per_checkpoint=1000,
+        epochs_per_checkpoint=2,
+        shuffle_audiopaths=True,
+        shuffle_batches=True,
+        shuffle_samples=False, # exclusive with shuffle_audiopaths and shuffle_batches
+        permute_opt='rand', # 'rand', 'semi-sort', 'bucket', etc.
+        local_rand_factor=0.1, # used when permute_opt == 'semi-sort'
+        local_bucket_factor=3, # used when permute_opt == 'bucket'
+        num_bins = 10, # used when permute_opt == 'alternative-sort'
+        pre_batching=True, # pre batch data, so batch_size is 1 in DataLoader
+        prep_trainset_per_epoch=False,
         seed=1234,
         dynamic_loss_scaling=True,
         fp16_run=False,
@@ -25,8 +37,9 @@ def create_hparams(hparams_string=None, verbose=False):
         # Data Parameters             #
         ################################
         load_mel_from_disk=False,
-        training_files='filelists/ljs_audio_text_train_filelist.txt',
-        validation_files='filelists/ljs_audio_text_val_filelist.txt',
+        training_files='filelists/ljspeech/ljs_audio_text_train_filelist.txt',
+        validation_files='filelists/ljspeech/ljs_audio_text_val_filelist.txt',
+        filelist_cols=['audiopath', 'text'],
         text_cleaners=['english_cleaners'],
 
         ################################
@@ -34,6 +47,9 @@ def create_hparams(hparams_string=None, verbose=False):
         ################################
         max_wav_value=32768.0,
         sampling_rate=22050,
+        override_sample_size=True, # override filter_length,hop_length,win_length
+        hop_time=12.5, # in milliseconds
+        win_time=50.0, # in milliseconds
         filter_length=1024,
         hop_length=256,
         win_length=1024,
@@ -93,3 +109,11 @@ def create_hparams(hparams_string=None, verbose=False):
         tf.logging.info('Final parsed hparams: %s', hparams.values())
 
     return hparams
+
+
+def hparams_debug_string(hparams, logfile=None):
+    values = hparams.values()
+    if logfile:
+        dict2row(values, logfile, delimiter=':', order='ascend', verbose=True)
+    hp = ['  %s: %s' % (name, values[name]) for name in sorted(values)]
+    return 'Hyperparameters:\n' + '\n'.join(hp)
